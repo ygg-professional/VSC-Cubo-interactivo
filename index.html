@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8" />
+<title>Cubo- Cámara con Mouse</title>
+<style>
+  body { margin: 0; overflow: hidden; }
+  canvas { display: block; }
+</style>
+</head>
+<body>
+<script src="https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.min.js"></script>
+<script>
+  // Crear escena
+  const escena = new THREE.Scene();
+
+  // Crear cámara
+  const camara = new THREE.PerspectiveCamera(75, window.innerWidth/window.innerHeight, 0.1, 1000);
+  camara.position.z = 5;
+
+  // Crear renderer
+  const renderer = new THREE.WebGLRenderer();
+  renderer.setSize(window.innerWidth, window.innerHeight);
+  document.body.appendChild(renderer.domElement);
+
+  // Crear cubo
+  const geometria = new THREE.BoxGeometry();
+  const material = new THREE.MeshNormalMaterial();
+  const cubo = new THREE.Mesh(geometria, material);
+  escena.add(cubo);
+
+  // Variable para guardar la posición del cursor
+  const cursor = { x: 0, y: 0 };
+
+  // Evento para actualizar posición del cursor normalizado entre -0.5 y 0.5
+  window.addEventListener('mousemove', (event) => {
+    cursor.x = (event.clientX / window.innerWidth) - 0.5;
+    cursor.y = (event.clientY / window.innerHeight) - 0.5;
+  });
+
+  // Animar escena
+  function animate() {
+    requestAnimationFrame(animate);
+
+    // Mover la cámara según la posición del mouse
+    // Multiplico por 5 para que el movimiento sea notorio
+    camara.position.x = cursor.x * 5;
+    camara.position.y = -cursor.y * 5;
+
+    // La cámara siempre mira al centro donde está el cubo
+    camara.lookAt(cubo.position);
+
+    renderer.render(escena, camara);
+  }
+
+  animate();
+
+  // Ajustar tamaño al redimensionar ventana
+  window.addEventListener('resize', () => {
+    camara.aspect = window.innerWidth / window.innerHeight;
+    camara.updateProjectionMatrix();
+    renderer.setSize(window.innerWidth, window.innerHeight);
+  });
+</script>
+</body>
+</html>
